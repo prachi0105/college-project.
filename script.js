@@ -2,11 +2,13 @@ let btn = document.querySelector('#btn');
 let content = document.querySelector('#content');
 let voice = document.querySelector('#voice');
 
-// Contact list with names and corresponding phone numbers
+
 const contacts = {
-    "mother": "9999999999999999",
-    "father":"99999999999999"
-     
+    "mummy": "+918358889498", 
+    "shakshi": "+919691233648",   
+    "komal": "+917999509700",
+    "ragani": "+917354573980",
+    "prachi jabalpur": "+917725876123"    
 };
 
 let taskList = [];
@@ -19,6 +21,7 @@ function speak(text) {
     textspeak.volume = 1;
     textspeak.lang = "hi-GB";
     window.speechSynthesis.speak(textspeak);
+    
 }
 
 // Function to greet based on the time of the day
@@ -34,9 +37,21 @@ function wisheme() {
     }
 }
 
+// window.addEventListener('load', () => {
+//     // Only greet once when the button is clicked for the first time
+//     btn.addEventListener('click', () => {
+//         if (!greetingSpoken) {
+//             wisheme(); // Greet the user
+//             greetingSpoken = true; // Set the flag to true after greeting
+//         }
+//         startSpeechRecognition(); // Start listening after greeting
+//     });
+// });
 window.addEventListener('load', () => {
     wisheme();
 });
+
+
 
 let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = new SpeechRecognition();
@@ -63,12 +78,18 @@ function takecommand(message) {
     // Basic Greetings
     if (normalizedMessage.includes("hello") || normalizedMessage.includes("hey")) {
         speak("Hello, how can I help you?");
-    } else if (normalizedMessage.includes("who are you")) {
-        speak("I am Shifra, a virtual assistant created by team aoratech.");
+    } else if (normalizedMessage.includes("who are you")||normalizedMessage.includes("tell me about yourself")|| normalizedMessage.includes("introduce yourself")) {
+        speak(" I am Shifra, a virtual assistant created by team shifra.");
     } else if (normalizedMessage.includes("how are you") || normalizedMessage.includes("how r you")) {
         speak("I am doing great, thank you for asking! What about you?");
-    } else if (normalizedMessage.includes("what is your name")) {
+    } else if (normalizedMessage.includes("what is your name")||normalizedMessage.includes("name")) {
         speak("My name is Shifra, your virtual assistant.");
+    }else if (normalizedMessage.includes("open password generator")) {
+        speak("opening password generator");
+        window.open("https://prachi0105.github.io/PASSWORD-GENERATOR/");
+    }else if (normalizedMessage.includes("open weather app")) {
+        speak("opening weather website  you can enter and check weather of any country");
+        window.open("https://prachi0105.github.io/weather-website/");
     }
 
     // WhatsApp Commands (with dynamic contact name extraction)
@@ -132,13 +153,25 @@ function takecommand(message) {
         window.open("whatsapp://");
     } else if (normalizedMessage.includes("open calculator")) {
         speak("Opening calculator");
-        window.open("calculator://");
+        window.open("https://prachi0105.github.io/calculator/");
+    }else if (normalizedMessage.includes("open Filpkart")) {
+        speak("Opening Flipkart.");
+        try {
+            window.open("https://www.flipkart.com/", "_blank");
+        } catch (error) {
+            speak("Sorry, I couldn't open Flipkart at the moment.");
+        }
+    } else if (normalizedMessage.includes("open amazon")) {
+        speak("Opening amazon");
+        window.open("https://www.amazon.in/?&tag=googhydrabk1-21&ref=pd_sl_5szpgfto9i_e&adgrpid=155259813593&hvpone=&hvptwo=&hvadid=713930225169&hvpos=&hvnetw=g&hvrand=2724562980640777469&hvqmt=e&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9301385&hvtargid=kwd-64107830&hydadcr=14452_2402225&gad_source=1");
     }
+    
 
     // Time and Date
     else if (normalizedMessage.includes("time")) {
         let time = new Date().toLocaleString(undefined, { hour: "numeric", minute: "numeric" });
         speak(time);
+        window.open("https://prachi0105.github.io/clock./");
     } else if (normalizedMessage.includes("date")) {
         let date = new Date().toLocaleString(undefined, { day: "numeric", month: "short" });
         speak(date);
@@ -215,6 +248,46 @@ function takecommand(message) {
         showTask();
     }
 
+    else if (normalizedMessage.includes("set alarm")) {
+        let time = message.match(/(\d+):(\d+)/); // Extract time in HH:MM format
+        if (time) {
+            let hours = parseInt(time[1]);
+            let minutes = parseInt(time[2]);
+            let now = new Date();
+            let alarmTime = new Date(now.setHours(hours, minutes, 0));
+            
+            let timeDiff = alarmTime - new Date();
+            if (timeDiff > 0) {
+                speak(`Setting alarm for ${hours}:${minutes}.`);
+                setTimeout(() => {
+                    speak(`Alarm ringing! It's ${hours}:${minutes}.`);
+                }, timeDiff);
+            } else {
+                speak("Please set a future time for the alarm.");
+            }
+        } else {
+            speak("Please specify the time for the alarm in HH:MM format.");
+        }
+    }
+    // Basic calculation logic
+function calculate(expression) {
+    try {
+        let result = eval(expression);
+        speak("The result is " + result);
+    } catch (error) {
+        speak("Sorry, I couldn't compute that.");
+    }
+}
+
+// Command to activate calculator
+if (normalizedMessage.includes("calculate")) {
+    let expression = message.replace("calculate", "").trim();
+    calculate(expression);
+}
+
+
+
+
     // Directions (Google Maps)
     else if (normalizedMessage.includes("direction")) {
         let location = message.replace("direction to", " ").trim();
@@ -226,6 +299,7 @@ function takecommand(message) {
     }
     else if (normalizedMessage.includes("playing")) {
         let song = message.replace("playing ", "").trim();
+        speak("playing  " + normalizedMessage.replace("playing", "").trim() + " on youtube.");
         window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(song)}`);
     }
 }
@@ -262,7 +336,8 @@ function extractMessage(message) {
     // Convert Currency
     async function convertCurrency(fromCurrency, toCurrency, amount) {
         try {
-            const apiKey = "YOUR_CURRENCY_API_KEY";
+            const apiKey = "3ad32678f796cd8d5653549a";
+            // https://v6.exchangerate-api.com/v6/${apiKey}/latest/${fromCurrency}
             const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/${fromCurrency}`);
             const data = await response.json();
             if (data.result === "success") {
@@ -309,4 +384,5 @@ function extractMessage(message) {
             speak("Sorry, I couldn't fetch a joke right now.");
         }
     }
+
 
